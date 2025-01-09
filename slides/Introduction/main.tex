@@ -3,6 +3,8 @@
 \documentclass{antclass}
 \newif\ifshow\showtrue
 
+%\newcommand{\bf}{\mathbf}
+
 %\pretitle{Version 2.2}
 \title{Boltzman Machine}
 \subtitle{Review and Prospects}
@@ -14,6 +16,189 @@
 \chapter{Energy Based Models}
 
 \chapter{Botzman Machine}
+\section{Introduction}
+\begin{itemize}
+ 	\item Idea was taken from statistical physics and formulated by cognitive scientists.
+ 	
+ 	\item Energy function:
+ 	\[
+ 	E(x;\theta) = - (\bf{x}^T\bf{Wx}+\bf{b}^T\bf{x})
+ 	\]
+ 	\item Parameters same as in \textit{Hopfield} networks and \textit{Ising} models
+ 	
+ 
+\end{itemize}
+
+\section{Problem}
+
+\begin{itemize}
+
+	\item Hard to train (due to the partition function)
+	\item Solution:
+	\begin{itemize}
+		\item Introducing latent variables
+		\item  Restricting connections among observables.
+	\end{itemize}
+
+\end{itemize}
+
+\section{Restricting BMs}
+\begin{itemize}
+	\item Consider: binary observable variables \(\bf{x}\in \{0,1\}^D \) and binary latent (hidden) variables \(\bf{z}\in \{0,1\}^M\)
+	\item The relationships among variables
+	specified through this \textit{energy function}:
+	\begin{equation}
+		E(\bf{x,z};\theta) = - \bf{x}^T\bf{Wz}-\bf{b}^T\bf{x} -\bf{c}^Tx
+	\end{equation} 
+	\item For this EF, the RBM is defined by the \textit{Gibbs} distribution:
+	\begin{equation}
+	p(\bf{x,z};\theta) = \frac{1}{Z_\theta}\exp(-E(\bf{x,z};\theta))
+	\end{equation}
+	
+	
+\end{itemize} 
+
+\pagebreak
+
+\begin{itemize}
+	\item the \textit{partition function}:
+	\begin{equation}
+		Z_\theta = \sum_{\mathbf{x}} \sum_{\mathbf{z}} \exp \big(-E(\mathbf{x}, \mathbf{z}; \theta)\big)
+	\end{equation}
+	\item The marginal probability over observables (the likelihood of observation):
+	\begin{equation}
+		p(\mathbf{x}|\theta) = \frac{1}{Z_\theta} \exp \big(-F(\mathbf{x}; \theta)\big)
+	\end{equation}
+	\item where \(F(\cdot)\) is the \emph{free energy}:
+	\begin{equation}
+		F(\mathbf{x}; \theta) = -\mathbf{b}^\top \mathbf{x} - \sum_j \log \big(1 + \exp(c_j + (\mathbf{W}_{\cdot j})^\top \mathbf{x}) \big).
+	\end{equation}
+\end{itemize}
+
+\section{RBM}
+\begin{itemize}
+	\item The presented model is called a restricted Boltzmann machine (RBM).
+	\item  Useful property: the conditional distribution over the hidden variables factorizes given the observable variables and vice versa:
+	
+	\begin{align}
+		p(z_m = 1 | \mathbf{x}, \theta) &= \mathrm{sigm}\big(c_m + (\mathbf{W}_{\cdot m})^\top \mathbf{x}\big),  \\
+		p(x_d = 1 | \mathbf{z}, \theta) &= \mathrm{sigm}\big(b_d + \mathbf{W}_{d \cdot} \mathbf{z}\big). 
+	\end{align}
+	
+\end{itemize}
+
+\section{Learning RBMs}
+\begin{itemize}
+	\item For given data \(\mathcal{D}=\{\mathbf{x}_n\}_{n=1}^N\) \item Train an RBM using the maximum likelihood
+	\begin{equation}
+		\ell(\theta) = \frac{1}{N} \sum_{\mathbf{x}_n \in \mathcal{X}} \log p(\mathbf{x}_n \mid \theta)
+	\end{equation}
+	\item The gradient with respect to \(\theta\):
+\begin{align}
+	\nabla_\theta \ell(\theta) &= -\frac{1}{N} \sum_{n=1}^N \big( \nabla_\theta F(\mathbf{x}_n; \theta) - \sum_{\mathbf{\hat{x}}} p(\mathbf{\hat{x}}|\theta) \nabla_\theta F(\mathbf{\hat{x}}; \theta) \big)
+\end{align}
+	\item Cannot be computed analytically because the second term requires summing over all configurations of observables.
+
+\end{itemize}
+\pagebreak
+
+\begin{itemize}
+	\item One way to sidestep this: Stochastic approximation
+	\item  Replacing the expectation under \( p(\mathbf{x}|\theta) \) by a sum over \( S \) samples \(\{\mathbf{\hat{x}}_1, \ldots, \mathbf{\hat{x}}_S\}\) drawn according to \( p(\mathbf{x}|\theta) \):
+	\begin{align}
+		\nabla_\theta \ell(\theta) &\approx -\frac{1}{N} \sum_{n=1}^N \nabla_\theta F(\mathbf{x}_n; \theta) - \frac{1}{S} \sum_{s=1}^S \nabla_\theta F(\mathbf{\hat{x}}_s; \theta).
+	\end{align}
+\end{itemize}
+
+\pagebreak
+\begin{itemize}
+	\item A different approach: \emph{contrastive divergence}
+	\item Approximates the expectation under \( p(\mathbf{x}|\theta) \) by a sum over samples \(\mathbf{\tilde{x}}_n\) drawn from a distribution obtained by applying \( K \) steps of the block Gibbs sampling procedure:
+	\begin{align}
+		\nabla_\theta \ell(\theta) &\approx -\frac{1}{N} \sum_{n=1}^N \big( \nabla_\theta F(\mathbf{x}_n; \theta) - \nabla_\theta F(\mathbf{\tilde{x}}_n; \theta) \big). 
+	\end{align}
+	 
+\end{itemize}
+
+%\pagebreak
+%
+%\begin{itemize}
+%	\item \textbf{Step 1: Sample hidden units.}
+%	\[
+%	z_m^{(t+1)} \sim \mathrm{Bernoulli}(\mathrm{sigm}(c_m + \mathbf{W}_{\cdot m}^\top \mathbf{x}^{(t)})).
+%	\]
+%	\item \textbf{Step 2: Sample visible units.}
+%	\[
+%	x_d^{(t+1)} \sim \mathrm{Bernoulli}(\mathrm{sigm}(b_d + \mathbf{W}_{d \cdot} \mathbf{z}^{(t+1)})).
+%	\]
+%	
+%	    \item \textbf{Positive Phase:} Compute \( \nabla_\theta F(\mathbf{x}_n; \theta) \) at data point \( \mathbf{x}_n \).
+%	\item \textbf{Negative Phase:} Run Gibbs sampling for \( K \) steps to obtain \( \mathbf{\tilde{x}}_n \), then compute \( \nabla_\theta F(\mathbf{\tilde{x}}_n; \theta) \).
+%	\item \textbf{Gradient Approximation:}
+%	\[
+%	\nabla_\theta \ell(\theta) \approx \frac{1}{N} \sum_{n=1}^N \big( \nabla_\theta F(\mathbf{x}_n; \theta) - \nabla_\theta F(\mathbf{\tilde{x}}_n; \theta) \big).
+%	\]
+%	
+%\end{itemize}
+
+\pagebreak
+
+\begin{itemize}
+
+	\item The original CD used K steps of the Gibbs chain, starting and is restarted after every parameter
+	update.
+	\item An alternative approach, Persistent Contrastive Divergence (PCD)
+	does not restart the chain after each update
+	typically resulting in a slower
+	convergence rate but eventually better performance 
+\end{itemize}
+
+\section{Higher-Order Relationships }
+
+\begin{itemize}
+	\item The energy function allows the modeling of
+	higher-order dependencies among variables.
+	\item For instance: Third-order multiplicative interactions by introducing two kinds of hidden	variables
+	\begin{itemize}
+		\item \textbf{Subspace Units:} Reflect feature variations, robust to invariances:
+		\item \textbf{Gate Units:} Activate subspace units, pool subspace features.
+	\end{itemize}
+\end{itemize}
+
+\pagebreak
+\subsection{Random Variables for SubspaceRBM}
+\begin{itemize}
+	\item Observables: \( \mathbf{x} \in \{0, 1\}^D \).
+	\item Gate Units: \( \mathbf{h} \in \{0, 1\}^M \).
+	\item Subspace Units: \( \mathbf{S} \in \{0, 1\}^{M \times K} \).
+	\item \textbf{Connections:} \( x_i \), \( h_j \), and \( s_{jk} \).
+\end{itemize}
+
+\pagebreak
+
+\subsection{Energy Function for SubspaceRBM}
+	\begin{align}
+	E(\mathbf{x}, \mathbf{h}, \mathbf{S}; \theta) =
+	-\sum_{i=1}^D \sum_{j=1}^M \sum_{k=1}^K W_{ijk} x_i h_j s_{jk} \nonumber \\
+	-\sum_{i=1}^D b_i x_i 
+	-\sum_{j=1}^M c_j h_j 
+	-\sum_{j=1}^M h_j \sum_{k=1}^K D_{jk} s_{jk},
+	\end{align}
+	\[
+	\theta = \{W, \mathbf{b}, \mathbf{c}, \mathbf{D}\}, \quad 
+	W \in \mathbb{R}^{D \times M \times K}, \quad \mathbf{b} \in \mathbb{R}^D, \quad \mathbf{c} \in \mathbb{R}^M, \quad \mathbf{D} \in \mathbb{R}^{M \times K}.
+	\]
+	
+	
+\pagebreak
+\subsection{Conditional Distributions in SubspaceRBM}
+\begin{gather}	
+	p(x_i = 1 | \mathbf{h}, \mathbf{S}) = \mathrm{sigm}\left(\sum_j \sum_k W_{ijk} h_j s_{jk} + b_i\right) \\
+	p(s_{jk} = 1 | \mathbf{x}, h_j) = \mathrm{sigm}\left(\sum_i W_{ijk} x_i h_j + h_j D_{jk}\right) \\
+	p(h_j = 1 | \mathbf{x}) = \mathrm{sigm}\left(-K \log 2 + c_j + \sum_{k=1}^K \mathrm{softplus}\left(\sum_i W_{ijk} x_i + D_{jk}\right)\right)
+\end{gather}
+
+
 
 \chapter{Research Prospect}
 

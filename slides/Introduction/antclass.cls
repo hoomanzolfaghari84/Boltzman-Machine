@@ -588,9 +588,12 @@
             (-\@xw,-4.5) -- (-\@xw,-2.25cm);
         % Logo
         \begin{scope}[xshift={-\@xw+1.5cm}]
-            \path (0,0.878) pic[color=colorH] {antlogocompass};
-            \path (0,-0.811) pic[color=colorH] {antlogoant};
-            \path (0,-1.567) pic[color=colorH] {antlogocenter};
+%            \path (0,0.878) pic[color=colorH] {antlogocompass};
+%            \path (0,-0.811) pic[color=colorH] {antlogoant};
+   % Include PNG logo
+			\node[anchor=center] at (0, 0) {\includegraphics[width=3cm]{pics/sharif-main-logo.png}};
+
+%            \path (0,-1.567) pic[color=colorH] {antlogocenter};
         \end{scope}
         % Text widths
         \newlength{\@titlewidth}
@@ -686,7 +689,9 @@
         \path (0,0) pic{fullColorBkgnd};
         % Logo
         \path (0,0) pic[scale=2, colorH] {antlogocompass};}}
-
+%		\begin{scope}
+%		\node[anchor=center] at (0, 0) {\includegraphics[width=3cm]{pics/sharif-main-logo.png}};
+%		\end{scope}
 % Headers and footers
 \newcommand{\@headername}{}
 \pagestyle{fancy}
