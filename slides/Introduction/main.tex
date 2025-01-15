@@ -6,34 +6,248 @@
 %\newcommand{\bf}{\mathbf}
 
 %\pretitle{Version 2.2}
-\title{Boltzman Machine}
-\subtitle{Review and Prospects}
-\author{Hooman Zolfaghari \\ Ramtin Moslem \\ Borna (lastname) \\ Houman (lastname)}
+\title{Boltzmann Machine}
+\subtitle{Overview and Prospects}
+\author{Hooman Zolfaghari \\ Ramtin Moslemi \\ Borna (lastname) \\ Houman (lastname)}
 
 \begin{document}
 \maketitle
+\chapter{Machine Learning \& Physics}
+
+\section{How are they related}
+\begin{itemize}
+	\item Bridge between physics and machine learning:
+	\textbf{information}
+	\item Amount of information = Extent of surprise
+	\item Amount of information of event \( A = - \log \mathbb{P}(\text{event }A) \).
+
+	\[
+	\text{Little ``information''} \quad \Leftrightarrow \quad \text{difficult to predict} \quad \Leftrightarrow \quad \text{large information entropy}
+	\]
+	\[
+	\text{A lot of ``information''} \quad \Leftrightarrow \quad \text{easy to predict} \quad \Leftrightarrow \quad \text{small information entropy}
+	\]
+	
+	
+\end{itemize}
+
+\section{Maxwell’s demon \& Drawing Decisions}
+
+  \begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.8\linewidth]{pics/MLandPhysics/drawing.jpg}
+%	\caption{}
+	\label{fig:drawing}
+\end{figure}
+
+
+
+\section{Machine Learning Overview}
+\begin{quote}
+	 “\textit{Intelligence is not just about pattern recognition and function approximation. It’s about	modeling the world}”. — Josh Tenenbaum, NeurIPS 2021.
+\end{quote}
+	\begin{itemize}
+		\item We have an observable space \(\mathcal{Z}\), a probability measure \(\mathbb{P}\), a sample \(S=\{Z_i\}_{i=1}^n\).
+		\item Formulate the problem with a Hypothesis set \(\mathcal{H}\) and a "Loss function".
+		\item (Ultimate goal) Statistical Risk: \(\arg\min_{h\in\mathcal{H}} R(h) = \mathbb{E}(\ell(h))\)
+		\item Empirical Risk: \(\hat{R}_S(h) = \frac{1}{n} \sum_{Z \in S} \ell(h(Z))  \)
+	\end{itemize}
+	
+\section{Artificial Neural Network}
+
+	\begin{itemize}
+		\item A feed-forward neural network defines a function $f:\mathbb{R}^d\rightarrow \mathbb{R}^k$ recursively via layers .
+		\[f(X) = f^{(L)}\circ f^{(L-1)}\circ \cdots \circ f^{(1)}(X) \quad f^{(i)}(X^{(i)})= \sigma(WX^{(i)}+b) \]
+	\end{itemize}
+	
+	\textbf{Universal Approximation Theorem:}
+	\begin{quote}
+		\small For any continuous function $g:\mathbb{R}^d\rightarrow \mathbb{R}^k$ on a compact subset $K\subset \mathbb{R}^d$ and for any $\varepsilon>0$, there exists a neural network $f\in \mathcal{H}$ such that:
+		\[
+		\sup_{x\in K} \big|g(x)-f(x)\big| < \varepsilon.
+		\]
+	\end{quote}
+
+\section{Training ANN}
+\begin{itemize}
+	
+\item \textbf{Gradient Descent:}
+\[
+\theta\to f, \quad \theta_{t+1} = \theta_t - \eta \nabla_\theta \hat{R}_n(f)
+\]
+
+
+\item In infinite-width limit, the distribution over outputs of a randomly initialized neural network converges to a Gaussian Process%~\cite{neal1996priors}.
+\item In gradient descent, the evolution of the network’s predictions can be approximated by a linear model characterized by the NTK:
+\[
+\Theta(x,x') = \langle \nabla_\theta f(x;\theta), \nabla_\theta f(x';\theta) \rangle.
+\]
+\item In infinite-width limit, the NTK can guarantee convergence under some assumptions.
+\end{itemize}
+ 
+
+
+
+
 
 \chapter{Energy Based Models}
 
-\chapter{Botzman Machine}
+\chapter{Boltzman Machine}
 \section{Introduction}
 \begin{itemize}
  	\item Idea was taken from statistical physics and formulated by cognitive scientists.
+	
+	\item The Hopfield network can reproduce specific patterns it has memorized
  	
- 	\item Energy function:
- 	\[
- 	E(x;\theta) = - (\bf{x}^T\bf{Wx}+\bf{b}^T\bf{x})
- 	\]
- 	\item Parameters same as in \textit{Hopfield} networks and \textit{Ising} models
+ 	\item Goal: "Understanding" the data instead of only memorizing
  	
+ 	\item Boltzman machine can generate new patterns it has never seen before.
+ 	\item Multiple potential outputs (non-deterministic)
+ 	
+ 	\item BM = Hopfiel network + Stochasticity + Hidden Units
+
  
 \end{itemize}
 
-\section{Problem}
+\pagebreak
+
+\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.8\linewidth]{pics/BM/Ball-Analogy.jpg}
+	%	\caption{}
+	\label{fig:ball-analogy}
+\end{figure}
+
+\pagebreak
+
+
+\begin{itemize}
+	\item We can formulate this by denoting \( T = \frac{-\ln(p)}{\epsilon}\), as:
+	\begin{equation}
+		\mathbb{P}(\Delta E) = e^{\frac{-\Delta E}{kT}}
+	\end{equation}
+	\item This gives us relative probability of changing energy.
+	\item Knowing all probabilities have volume one, gives us absolute probability of each state.
+	\item Giving us the partition function as the total volume.
+	\begin{equation}
+		\mathbb{P}(E) = \frac{1}{Z} e^{-E/T}
+	\end{equation}
+	
+\end{itemize}
+
+
+\section{Inference}
+\begin{itemize}
+	\item Hopfield Network's \textbf{deterministic} update rule:
+	\[
+	h_i = \sum_{j\neq i} w_{ij}x_j \rightarrow \text{input to neuron }i, \quad x_i = \begin{cases}
+		+1 & h_i>0 \\ -1 & h_i <0
+	\end{cases} \rightarrow \text{update rule}
+	\]
+	\item Always Greedy moving to the lowest energy state possible
+	\item Boltzmann Machine update rule:
+	\[
+	 x_i = \begin{cases}
+		+1 & \text{with probability }\mathbb{P}( E_{\text{on}}) \\
+		-1 & \text{with probability }1-\mathbb{P}(E_{\text{off}})
+	\end{cases}
+	\]
+\end{itemize}
+
+\pagebreak
+
+\begin{figure}[H]
+			\centering
+	\includegraphics[width=\linewidth]{pics/BM/update-rule-hq.jpg}
+
+	\label{fig:update-rule}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\linewidth]{pics/BM/sigmoid.jpg}
+		\caption{Sigmoid activation \(\sigma(x)=\frac{1}{1+e^{-x}}\)}
+	\label{fig:sigmoid}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[b]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{pics/BM/temp-low.jpg}
+
+		\label{fig:temp-low}
+	\end{minipage}
+	
+	\begin{minipage}[b]{0.5\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{pics/BM/temp-high.jpg}
+		
+		\label{fig:temp-high}
+	\end{minipage}
+	
+	\label{fig:both}
+\end{figure}
+
+\section{Learning}
+
+\begin{itemize}
+	\item Instead of memorizing patterns we want to learn probability distribution of data.
+	\item We want the training data to have high probability
+	\item Notice that increasing a states probability affects other states probability through partition function
+	
+		\[ \log \mathbb{P}(\text{data states}) = \sum_{i=1}^{N} \log(\frac{1}{Z} e^{-E(x^{(i)})/T}) \]
+\end{itemize}
+\pagebreak
+
+\[
+\underbrace{ \log \mathbb{P}(\text{data states}) }_{\text{Maximaize}} = -\frac{1}{T}[\sum_{i=1}^{N} \underbrace{E(x^{(i)})}_{\text{Minimize}} ]  - N \underbrace{ \log Z}_{\text{Minimize}}
+\]
+
+\begin{itemize}
+\item Taking derivative with each \(w_{ij}\):
+\begin{itemize}
+	\item First term:( similar to Hopfield) \(\frac{\partial E(x^{(i)}) }{\partial w_{ij}} = -(x_ix_j)\)
+	\item Second term: \(\frac{\partial \log Z}{\partial w_{ij}} = \sum_{s \in \text{all states}} \mathbb{P}(s)x_i^s x_j^s\)
+\end{itemize}
+\item Giving us the \textbf{Contrastive Hebbian Rule}:
+\[
+\Delta w_{ij} = \frac{1}{N} \sum_{n=1}^{N} x^{(n)}_ix^{(n)}_j - \mathbb{E}[ x_i^sx_j^s]
+\]
+\item second term computed by iterative sampling until equilibrium.
+\end{itemize}
+
+
+\section{Hidden Units}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{pics/BM/BM.png}
+	%	\caption{}
+	\label{fig:bm-structure}
+\end{figure}
 
 \begin{itemize}
 
-	\item Hard to train (due to the partition function)
+\item Visible Units: States directly encoding the data
+\item Hidden Units: Internal representation of latent variables
+\item We use the same update rule in inference
+\item In Learning, input the data and sample the hidden state
+\end{itemize}
+
+
+\section{Energy Based Model}
+
+\begin{itemize}
+	 	
+	\item Energy function:
+	\[
+	E(x;\theta) = - (\bf{x}^T\bf{Wx}+\bf{b}^T\bf{x})
+	\]
+	\item Parameters same as in \textit{Hopfield} networks and \textit{Ising} models
+	
+	\item Problem: Hard to train (due to the partition function)
 	\item Solution:
 	\begin{itemize}
 		\item Introducing latent variables
