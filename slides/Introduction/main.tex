@@ -49,7 +49,7 @@
 	\begin{itemize}
 		\item We have an observable space \(\mathcal{Z}\), a probability measure \(\mathbb{P}\), a sample \(S=\{Z_i\}_{i=1}^n\).
 		\item Formulate the problem with a Hypothesis set \(\mathcal{H}\) and a "Loss function".
-		\item (Ultimate goal) Statistical Risk: \(\arg\min_{h\in\mathcal{H}} R(h) = \mathbb{E}(\ell(h))\)
+		\item (Ultimate goal) Statistical Risk: \(\arg\min_{h\in\mathcal{H}} R(h) = \mathbb{E}[\ell(h)]\)
 		\item Empirical Risk: \(\hat{R}_S(h) = \frac{1}{n} \sum_{Z \in S} \ell(h(Z))  \)
 	\end{itemize}
 	
@@ -91,6 +91,9 @@
 
 
 \chapter{Energy Based Models}
+\section{Outsource}
+
+Outsourcing
 
 \chapter{Boltzman Machine}
 \section{Introduction}
@@ -101,10 +104,10 @@
  	
  	\item Goal: "Understanding" the data instead of only memorizing
  	
- 	\item Boltzman machine can generate new patterns it has never seen before.
+ 	\item Boltzmann machine can generate new patterns it has never seen before.
  	\item Multiple potential outputs (non-deterministic)
  	
- 	\item BM = Hopfiel network + Stochasticity + Hidden Units
+ 	\item BM = Hopfield network + Stochasticity + Hidden Units
 
  
 \end{itemize}
@@ -535,177 +538,58 @@ Deep architectures in neural networks are analogous to RG transformations:
 
 \pagebreak
 
-\chapter{Research Prospect}
+\chapter{Adversarial Examples}
 
-\chapter{Template Things}
-\section{Single Column}
+\section{Adversarial Examples}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{pics/fgsm_panda_image.png}
+	%	\caption{}
+	\label{fig:panda}
+\end{figure}
 
-For 4-by-3 aspect ratio slides, specify \verb|standard| as an option to the
-document class. Write your presentation like a normal \LaTeX\ file with a
-\verb|\maketitle| command and \verb|\chapter| and \verb|\section| headings. The
-\verb|\maketitle| contents are defined by the following macros:
-\begin{center}
-    \begin{tabular}{l@{\qquad}l}
-        \verb|\pretitle| &
-        \verb|\author| \\
-        \verb|\title| &
-        \verb|\subtitle|
-    \end{tabular}
-\end{center}
-The \verb|\chapter| heading creates a slide with just the chapter name, and the
-\verb|\section| heading sets the title of a new slide. However, if no text
-follows the section, no slide will be created. Text which does not fit on one
-slide will flow onto the next slide automatically.
-
-\section{Double Column}\twocolumn\raggedright
-
-Use the \verb|\twocolumn| and \verb|\onecolumn| commands right after the section
-heading to control the number of columns. Text will flow from the left column to
-the right.
+\section{Adversarial Examples}
 \begin{itemize}
-    \item Point one
-    \item Point two
-    \item Point three
-    \item Point four
-    \item Point five
-    \item Point six
-    \item Point seven
-    \item Point eight
-    \item Point nine
-    \item Point ten
-    \item Point eleven
-    \item Point twelve
+	\item We are to perturb all images such that they get misclassified.
+	\item Both previously seen and unseen data are vulnerable.
+	\item Defensive methods based on gradient obfuscation don't work.
+	\item Over the years more advanced attacks have been introduced.
+	\item The general idea is to generate adversarial examples using:
+	$$x_{adv} = x + \delta , \quad \delta = \arg \max L(x+\delta , y), ~\|\delta \| \le \epsilon$$
 \end{itemize}
-You can use \verb|\pagebreak| to force text onto the next column.
 
-\section{Table of Stuff}
+\section{Adversarial Training}
+\begin{itemize}
+	\item While most other defenses fail, adversarial training works (kind of):
+	$$
+	\min_\theta \mathbb{E}_{(x,y)\in \mathcal{D}}\left[\max_{\delta \in \mathcal{S}} L(\theta, x+\delta, y)\right]
+	$$
+		\item In AT we are faced with a minmax optimization problem.
+		\item Sadly, AT reduces clean accuracy and is very time consuming.
+		\item More recent works address these issues.
+\end{itemize}
 
-You can create any variety of subdivisions on your slide by using the
-\verb|tabular| environment.
-\begin{center}
-\begin{tabular}{C{0.25\textwidth}cC{0.25\textwidth}cC{0.25\textwidth}}
-    \cellcolor{colorH}\textcolor{white}{Primary}\strut &&
-    \cellcolor{colorH}\textcolor{white}{Secondary}\strut &&
-    \cellcolor{colorH}\textcolor{white}{Tertiary}\strut \\
-    First && Second && Third \\
-    One && Two && Three \\[1em]
-    \cellcolor{colorH}\textcolor{white}{Alpha}\strut &&
-    \cellcolor{colorH}\textcolor{white}{Beta}\strut &&
-    \cellcolor{colorH}\textcolor{white}{Gamma}\strut \\
-    Green && Blue && Red \\
-    Cyan && Yellow && Magenta
-\end{tabular}
-\end{center}
-The \verb|\cellcolor| command sets the background color of a table cell.
+\chapter{ Restricted Hopfield Networks are Robust to Adversarial Attack}
+\section{Dense Associative Memory}
+\begin{itemize}
+	\item DAM was proposed to improve the storage limitation of the Hopfield Neural Network.
+	\item DAM uses super-linear memory storage capacity as a function of the number of feature neurons.
+	%\item Modern Hopfield Network (MHN) facilitate the storage and retrieval of raw input data, intermediate results, or learned prototypes.
+	\item Using a gradient decent in the pixel space, a set of rubbish images is constructed that correspond to the minima of the objective function used in training.
+	\item As the power of the interaction vertex is increased the images gradually become less speckled and more semantically meaningful.
+\end{itemize}
+\section{Image Generation}
 
-\section{Centering}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.55\linewidth]{pics/Rubbish_n_2_3_20_30}
+\end{figure}
 
-\begin{Center}
-    \Large Use the \texttt{Center} environment \\
-    to center horizontally \emph{and} vertically.
-\end{Center}
-
-\chapter{Explicit Code}
-
-\section{Python}\onecolumn
-
-\ifshow
-Use the \verb|python| environment for Python code.
-\begin{python}
-def write_list(fid, x, level):
-    ind = '  '*level
-    xs = '0' if abs(x[0]) < 1e-3 else "%.3f"
-    txt = '\n%svalues=\"%s' % (ind, xs)
-    for n in range(1, len(x)):
-        xs = '0' if abs(x[n]) < 1e-3 else "%.3f"
-        if len(txt) + 3 + len(xs) >= 80:
-            fid.write(txt + ';\n')
-            txt = ind + '  ' + xs
-        else:
-            txt += '; ' + xs
-    fid.write(txt + '\"')
-\end{python}
-\pagebreak\addtocounter{page}{-1}
-\fi
-You can use the \verb|`\HL`| command to highlight a line of code.
-\begin{python}
-def write_list(fid, x, level):
-    ind = '  '*level
-    xs = '0' if abs(x[0]) < 1e-3 else "%.3f"
-    txt = '\n%svalues=\"%s' % (ind, xs)
-    for n in range(1, len(x)):
-        xs = '0' if abs(x[n]) < 1e-3 else "%.3f"
-        if len(txt) + 3 + len(xs) >= 80:
-`\HL`            fid.write(txt + ';\n')
-            txt = ind + '  ' + xs
-        else:
-            txt += '; ' + xs
-    fid.write(txt + '\"')
-\end{python}
-
-\section{MATLAB}
-
-Use the \verb|matlab| environment for MATLAB code.
-\begin{matlab}
-function savepdf(name, width, height)
-    % name is the file name including ".pdf".
-    % Both width and height are in (cm).
-    set(gcf, 'units', 'centimeters', ...
-        'position', [0, 0, width, height])
-    set(gca, 'FontSize', 9);
-    set(gca, 'FontName', 'Times New Roman');
-    exportgraphics(gcf, name, ...
-        'ContentType', 'vector');
-end
-\end{matlab}
-
-\section{R Language}
-
-Use the \verb|rlang| environment for R code.
-\begin{rlang}
-factorial <- function(n) {
-    if (n == 0 || n == 1) {
-        return(1)
-    } else {
-        return(n * factorial(n - 1))
-    }
-}
-\end{rlang}
-
-% You can create blank pages for placing full-page graphics or text with the
-% `\blankpage` command.
-\blankpage
-% You can place images and text at arbitrary locations with the `\pos` command.
-\pos{0pt}{0pt}{\tikz{
-    \newcounter{density}\setcounter{density}{10}
-    \def\mainColor{colorH}
-    \path[coordinate] (0,0) coordinate(A)
-        ++(\paperwidth,0) coordinate(B)
-        ++(0,-\paperheight) coordinate(C)
-        ++(-\paperwidth,0) coordinate(D);
-    \fill[\mainColor!\thedensity]
-        (A) -- (B) -- (C) -- (D) -- cycle;
-    \foreach \x in {1,...,18}{%
-        \pgfmathsetcounter{density}{\thedensity+5}
-        \setcounter{density}{\thedensity}
-        \path[coordinate] coordinate(X) at (A){};
-        \path[coordinate] (A)
-            -- (B) coordinate[pos=0.15](A)
-            -- (C) coordinate[pos=0.15](B)
-            -- (D) coordinate[pos=0.15](C)
-            -- (X) coordinate[pos=0.15](D);
-        \draw[\mainColor!80!black, fill=\mainColor!\thedensity]
-            (A) -- (B) -- (C) -- (D) -- cycle;
-    }
-}}
-\pos[6cm]{0.125\textwidth}{2cm}{
-    \raggedright\large Blank pages with the ``\texttt{\textbackslash
-    blankpage}'' command.
-}
-\pos[6cm]{0.6\textwidth}{6cm}{
-    \raggedright\large Arbitrary positioning with the ``\texttt{\textbackslash
-    pos}'' command.
-}
+\section{Adversarial Examples}
+\begin{figure}
+	\centering
+\includegraphics[width=\linewidth]{pics/Adv_deform}
+\end{figure}
 
 \closing
 \end{document}
