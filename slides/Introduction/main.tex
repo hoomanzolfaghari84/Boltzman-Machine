@@ -412,7 +412,128 @@
 	p(h_j = 1 | \mathbf{x}) = \mathrm{sigm}\left(-K \log 2 + c_j + \sum_{k=1}^K \mathrm{softplus}\left(\sum_i W_{ijk} x_i + D_{jk}\right)\right)
 \end{gather}
 
+\chapter{Renormalization Group}
+\section{Introduction to Renormalization Group (RG)}
 
+\textbf{The Renormalization Group (RG)} is a mathematical framework used to study lengths or energy scales, particularly in statistical physics and quantum field theory.
+
+\begin{equation}
+e^{-H_{\text{RG}, \theta}[\{h_j\}]} \equiv \sum_{v_i}e^{T_\theta(\{v_i\}, \{h_j\}) - H(\{v_i\})}
+\end{equation}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.55\linewidth]{pics/Renormalization/BlockSpin.png}
+\end{figure}
+
+\pagebreak
+
+\section{RG in the 1D Ising Model}
+
+The RG approach can be illustrated with the one-dimensional Ising model. Without a magnetic field, the partition function $Q$ is given by
+($K = J / (k_B T)$):\begin{equation}
+Z(K, N) = \sum_{s_1, s_2, \dots, s_N = \pm 1} \exp \big[ K(s_1s_2 + s_2s_3 + s_3s_4 + \dots) \big],
+\end{equation}
+\textbf{Decimation:} Summing over even-numbered spins reduces the problem size.
+\begin{equation}
+Z(K', N) = \sum_{s_1, s_3, \dots} \big[ \exp(K' s_1 s_3) + \exp(-K' s_1 s_3) \big] \cdots.
+\end{equation}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.90\linewidth]{pics/Renormalization/SumOverEven.png}
+\end{figure}
+
+\pagebreak
+
+\section{Hidden Units in RBMs}
+
+\textbf{Restricted Boltzmann Machines (RBMs)} consist of visible ($v$) and hidden ($h$) units:
+\begin{equation}
+P(v, h) = \frac{1}{Z} \exp \big( \sum_i a_i v_i + \sum_j b_j h_j + \sum_{i, j} v_i W_{ij} h_j \big).
+\end{equation}
+Hidden units simplify data by marginalizing over $h$:
+\begin{equation}
+P(v) = \sum_h P(v, h).
+\end{equation}
+RBM Hamiltonian for the hidden units:
+\begin{equation}
+p_\theta(\{h_j\}) \equiv \frac{e^{-H_{\text{RBM}, \theta}[\{h_j\}]}}{Z}.
+\end{equation}
+hidden units condition over visible units:
+\begin{equation}
+T(\{v_i\}, \{h_j\}) = -E(\{v_i\}, \{h_j\}) + H[\{v_i\}].
+\end{equation}
+
+\pagebreak
+
+\section{Mapping RG to Hidden Units in RBMs}
+
+We divide both sides of Eq. 18 by Z to get:
+\begin{equation}
+\frac{e^{-H_{\text{RG}, \theta}[\{h_j\}]}}{Z} = \frac{\sum_{v_i}e^{T_\theta(\{v_i\}, \{h_j\}) - H(\{v_i\})}}{Z}
+\end{equation}
+Substituting Eq. 24 into this equation yields
+\begin{equation}
+\frac{e^{-H_{\text{RG}, \theta}[\{h_j\}]}}{Z} = \frac{\sum_{v_i}e^{-E(\{v_i\}, \{h_j\})}}{Z} = p_\theta(\{h_j\})
+\end{equation}
+Substituting Eq. 23 into the right-hand side yields the
+desired result
+\begin{equation}
+H_{\text{RG}, \theta}[\{h_j\}] = H_{\text{RBM}, \theta}[\{h_j\}]
+\end{equation}
+\textbf{Analogy:}
+\begin{itemize}
+\item RG reduces degrees of freedom (e.g., decimation of spins).
+\item Hidden units in RBMs marginalize over latent variables.
+\end{itemize}
+
+\pagebreak
+
+\section{Deep Architectures and RG}
+
+\[
+e^{T(\{v_i\}, \{h_j\})} = e^{-E(\{v_i\}, \{h_j\}) + H[\{v_i\}]}
+\]
+
+\[
+= \frac{p_\theta(\{v_i\}, \{h_j\})}{p_\theta(\{v_i\})} e^{H[\{v_i\}] - H_{\text{RBM}, \theta}[\{v_i\}]}
+\]
+
+\[
+= p_\theta(\{h_j\}|\{v_i\}) e^{H[\{v_i\}] - H_{\text{RBM}, \theta}[\{v_i\}]}
+\]
+only when RG satisfies
+\[
+\sum_{h_i}e^{T_\theta(\{v_i\}, \{h_j\})} = 1
+\]
+we can obtain
+\[
+H[\{v_i\}] = H_{\text{RBM}, \theta}[\{v_i\}]
+\]
+
+\pagebreak
+
+\section{Summery}
+
+\begin{figure}[h!]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{pics/Renormalization/Decimation.png}
+    \end{minipage} \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{pics/Renormalization/DeepLayers.png}
+    \end{minipage}
+\end{figure}
+
+Deep architectures in neural networks are analogous to RG transformations:
+\begin{itemize}
+\item Layers correspond to successive RG steps.
+\item Hidden units represent coarse-grained variables.
+\end{itemize}
+
+\pagebreak
 
 \chapter{Research Prospect}
 
